@@ -20,7 +20,7 @@ public class DemonScript : MonoBehaviour {
 	public static bool deathChallenge;
 
 	public GameObject[] players;
-	public static int playerCount = 4;
+	private int livingPlayers;
 
 	public enum EGesture {
 		Wide,
@@ -48,19 +48,57 @@ public class DemonScript : MonoBehaviour {
 
 		challengeGestures = new EGesture[challengeIcons.Length];
 
+		livingPlayers = players.Length;
+
 		challengePanel.SetActive (false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		if (deathChallenge) {
+			HandleDeathMode ();
+		} else {
+			HandleNormalMode ();
+		}
+	}
+
+	void HandleDeathMode() {
+		int successfulPlayers = 0;
+		foreach (GameObject p in players) {
+			if (p.activeInHierarchy) {
+				if (p.GetComponent<GestureScript> ().FinishedChallenge ()) {
+					successfulPlayers += 1;
+				}
+			}
+		}
+
+		if (successfulPlayers == livingPlayers - 1) {
+			foreach (GameObject p in players) {
+				if (p.activeInHierarchy) {
+					if (! (p.GetComponent<GestureScript> ().FinishedChallenge ())) {
+						p.SetActive (false);
+						livingPlayers -= 1;
+					}
+				}
+			}
+			deathChallenge = false;
+			challengePanel.SetActive (false);
+			normalPanel.SetActive (true);
+			lastChange = Time.time;
+		}
+	}
+
+	void HandleNormalMode() {
 		if (lastChange + changeDelay < Time.time) {
 			patternRound++;
 			lastChange = Time.time;
 
 			foreach (GameObject p in players) {
-				GestureScript playerScript = p.GetComponent<GestureScript> ();
-				if (playerScript.GetGesture () != currentGesture) {
-					deathChallenge = true;
+				if (p.activeInHierarchy) {
+					GestureScript playerScript = p.GetComponent<GestureScript> ();
+					if (playerScript.GetGesture () != currentGesture) {
+						deathChallenge = true;
+					}
 				}
 			}
 

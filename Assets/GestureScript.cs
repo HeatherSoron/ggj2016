@@ -27,7 +27,7 @@ public class GestureScript : MonoBehaviour {
 		}
 
 		if (DemonScript.deathChallenge) {
-			if (!FinishedChallenge () && activeGesture == DemonScript.challengeGestures [challengeIndex + 1]) {
+			if (!FinishedChallenge() && activeGesture == DemonScript.challengeGestures [challengeIndex + 1]) {
 				// yay, we've matched the next gesture! Huzzah!
 				challengeIndex += 1;
 			} else if (challengeIndex >= 0 && activeGesture != DemonScript.challengeGestures [challengeIndex]) {
@@ -59,6 +59,6 @@ public class GestureScript : MonoBehaviour {
 	}
 
 	public bool FinishedChallenge() {
-		return challengeIndex == DemonScript.challengeGestures.Length;
+		return challengeIndex + 1 >= DemonScript.challengeGestures.Length;
 	}
 }
