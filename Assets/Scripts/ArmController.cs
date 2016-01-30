@@ -4,8 +4,6 @@ using System;
 
 public class ArmController : MonoBehaviour
 {
-	public int Player;
-
     public enum ESide
     {
         Left,
@@ -38,19 +36,19 @@ public class ArmController : MonoBehaviour
 
     void Update()
     {
-		if (Input.GetButtonDown("P" + Player + "_Forward"))
+		if (GetComponentInParent<GestureScript>().GestureStart("Forward"))
         {
             Direction = EDirection.Forward;
         }
-		else if (Input.GetButtonDown("P" + Player + "_Middle"))
+		else if (GetComponentInParent<GestureScript>().GestureStart("Middle"))
         {
             Direction = EDirection.HalfOutward;
         }
-		else if (Input.GetButtonDown("P" + Player + "_Wide"))
+		else if (GetComponentInParent<GestureScript>().GestureStart("Wide"))
         {
             Direction = EDirection.Outward;
         }
-		else if (Input.GetButtonDown("P" + Player + "_Down"))
+		else if (GetComponentInParent<GestureScript>().GestureStart("Down"))
         {
             Direction = EDirection.Down;
         }

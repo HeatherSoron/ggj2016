@@ -4,8 +4,6 @@ using System;
 
 public class HeadController : MonoBehaviour
 {
-	public int Player;
-
     public enum EDirection
     {
         Forward,
@@ -32,19 +30,19 @@ public class HeadController : MonoBehaviour
 
     void Update()
     {
-		if (Input.GetButtonDown("P" + Player + "_Forward"))
+		if (GetComponentInParent<GestureScript>().GestureStart("Forward"))
         {
             Direction = EDirection.Up;
         }
-		else if (Input.GetButtonDown("P" + Player + "_Middle"))
+		else if (GetComponentInParent<GestureScript>().GestureStart("Middle"))
         {
             Direction = EDirection.Left;
         }
-		else if (Input.GetButtonDown("P" + Player + "_Wide"))
+		else if (GetComponentInParent<GestureScript>().GestureStart("Wide"))
         {
             Direction = EDirection.Right;
         }
-		else if (Input.GetButtonDown("P" + Player + "_Down"))
+		else if (GetComponentInParent<GestureScript>().GestureStart("Down"))
         {
             Direction = EDirection.Forward;
         }
