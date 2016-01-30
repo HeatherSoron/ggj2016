@@ -8,6 +8,7 @@ public class GestureScript : MonoBehaviour {
 	public float minTimeDiff = 0.2f;
 	private float lastGestureTime = 0;
 	private int patternRound = 0;
+    public GameObject successPrefab;
 
 	private int challengeIndex;
 
@@ -36,6 +37,10 @@ public class GestureScript : MonoBehaviour {
 			if (!FinishedChallenge() && activeGesture == DemonScript.challengeGestures [challengeIndex + 1]) {
 				// yay, we've matched the next gesture! Huzzah!
 				challengeIndex += 1;
+
+                if (FinishedChallenge()) {
+                    CreateSuccessPrefab();
+                }
 			} else if (challengeIndex >= 0 && activeGesture != DemonScript.challengeGestures [challengeIndex]) {
 				// whoops, we fumbled the sequence. Reset our progress on it :(.
 				challengeIndex = -1;
@@ -67,4 +72,8 @@ public class GestureScript : MonoBehaviour {
 	public bool FinishedChallenge() {
 		return challengeIndex + 1 >= DemonScript.challengeGestures.Length;
 	}
+
+    public void CreateSuccessPrefab() {
+        Instantiate(successPrefab, transform.position, Quaternion.identity);
+    }
 }
