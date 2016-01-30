@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class DemonScript : MonoBehaviour {
 
-	public GameObject ComboIcon1;
-	public GameObject ComboIcon2;
-	public GameObject ComboIcon3;
+	public GameObject[] challengeIcons;
+	public static EGesture[] challengeGestures;
+
 
 	public GameObject currentGestureIcon;
 	public GameObject nextGestureIcon;
@@ -15,8 +15,9 @@ public class DemonScript : MonoBehaviour {
 	private EGesture nextGesture;
 
 	public GameObject challengePanel;
+	public GameObject normalPanel;
 
-	public bool deathChallenge;
+	public static bool deathChallenge;
 
 	public GameObject[] players;
 	public static int playerCount = 4;
@@ -28,13 +29,8 @@ public class DemonScript : MonoBehaviour {
 		Down
 	};
 
-	public static EGesture[] gestures = new EGesture[3];
 
 	public static int patternRound = 0;
-
-	public static float power = 0.5f;
-	public float powerFade = 0.02f;
-
 
 	public GameObject powerBar;
 
@@ -46,12 +42,11 @@ public class DemonScript : MonoBehaviour {
 		deathChallenge = false;
 		lastChange = Time.time;
 
-		do {
-			currentGesture = RandomGesture ();
-		} while (currentGesture == EGesture.Down);
-		do {
-			nextGesture = RandomGesture ();
-		} while (nextGesture == currentGesture);
+		currentGesture = RandomGesture ();
+		nextGesture = RandomGesture (currentGesture);
+		ShowGesture (currentGestureIcon, currentGesture);
+
+		challengeGestures = new EGesture[challengeIcons.Length];
 
 		challengePanel.SetActive (false);
 	}
@@ -60,12 +55,6 @@ public class DemonScript : MonoBehaviour {
 	void Update () {
 		if (lastChange + changeDelay < Time.time) {
 			patternRound++;
-			for (int i = 0; i < gestures.Length; ++i) {
-				gestures [i] = RandomGesture ();
-			}
-			ShowGesture (ComboIcon1, gestures [0]);
-			ShowGesture (ComboIcon2, gestures [1]);
-			ShowGesture (ComboIcon3, gestures [2]);
 			lastChange = Time.time;
 
 			foreach (GameObject p in players) {
@@ -77,20 +66,24 @@ public class DemonScript : MonoBehaviour {
 
 			if (deathChallenge) {
 				challengePanel.SetActive (true);
+				normalPanel.SetActive (false);
+				foreach (GameObject p in players) {
+					p.GetComponent<GestureScript> ().StartDeathChallenge ();
+				}
+				for (int i = 0; i < challengeGestures.Length; ++i) {
+					EGesture lastGesture = i == 0 ? currentGesture : challengeGestures [i - 1];
+					challengeGestures [i] = RandomGesture (lastGesture);
+					ShowGesture (challengeIcons [i], challengeGestures [i]);
+				}
 			}
 
 			currentGesture = nextGesture;
-			while (currentGesture == nextGesture) {
-				nextGesture = RandomGesture ();
-			}
+			nextGesture = RandomGesture (currentGesture);
+			ShowGesture (currentGestureIcon, currentGesture);
 		}
 
-		ShowGesture (currentGestureIcon, currentGesture);
+		// update this every frame so that we can fade it in (with alpha)
 		ShowGesture (nextGestureIcon, nextGesture, (byte)(255 * (Time.time - lastChange) / changeDelay));
-
-		power -= powerFade * Time.deltaTime;
-
-		powerBar.GetComponent<Slider> ().value = power;
 	}
 
 	void ShowGesture(GameObject icon, EGesture gesture, byte alpha = 255) {
@@ -130,6 +123,10 @@ public class DemonScript : MonoBehaviour {
 	}
 
 	EGesture RandomGesture(EGesture lastGesture = EGesture.Down) {
-		return (EGesture)Random.Range (0, System.Enum.GetValues (typeof(EGesture)).Length);
+		EGesture gesture;
+		do {
+			gesture = (EGesture)Random.Range (0, System.Enum.GetValues (typeof(EGesture)).Length);
+		} while (gesture == lastGesture);
+		return gesture;
 	}
 }

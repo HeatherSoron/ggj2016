@@ -8,7 +8,7 @@ public class GestureScript : MonoBehaviour {
 	private float lastGestureTime = 0;
 	private int patternRound = 0;
 
-	private int currentGesture = 0;
+	private int challengeIndex;
 
 	private DemonScript.EGesture activeGesture = DemonScript.EGesture.Down;
 
@@ -20,25 +20,25 @@ public class GestureScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (patternRound != DemonScript.patternRound) {
-			currentGesture = 0;
-			patternRound = DemonScript.patternRound;
-		}
-
 		foreach (DemonScript.EGesture ges in System.Enum.GetValues(typeof(DemonScript.EGesture))) {
 			if (GestureStart ("" + ges)) {
 				activeGesture = ges;
 			}
 		}
 
-		if (GestureStart("" + DemonScript.gestures [currentGesture])) {
-			currentGesture++;
+		if (DemonScript.deathChallenge) {
+			if (!FinishedChallenge () && activeGesture == DemonScript.challengeGestures [challengeIndex + 1]) {
+				// yay, we've matched the next gesture! Huzzah!
+				challengeIndex += 1;
+			} else if (challengeIndex >= 0 && activeGesture != DemonScript.challengeGestures [challengeIndex]) {
+				// whoops, we fumbled the sequence. Reset our progress on it :(.
+				challengeIndex = -1;
+			}
 		}
-		if (currentGesture >= DemonScript.gestures.Length) {
-			DemonScript.power += 0.1f;
-			currentGesture = 0;
-		}
-		pip.transform.localPosition = new Vector3((currentGesture - 1) * 100, 0, 0);
+	}
+
+	public void StartDeathChallenge() {
+		challengeIndex = -1;
 	}
 
 	public bool GestureStart (string gesture) {
@@ -56,5 +56,9 @@ public class GestureScript : MonoBehaviour {
 
 	public DemonScript.EGesture GetGesture() {
 		return activeGesture;
+	}
+
+	public bool FinishedChallenge() {
+		return challengeIndex == DemonScript.challengeGestures.Length;
 	}
 }
