@@ -1,11 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class DemonScript : MonoBehaviour {
 
 	public GameObject[] challengeIcons;
 	public static EGesture[] challengeGestures;
+
+	public static bool started;
+
+	public GameObject startScreen;
 
 
 	public GameObject currentGestureIcon;
@@ -20,7 +25,6 @@ public class DemonScript : MonoBehaviour {
 	public static bool deathChallenge;
 
 	public GameObject[] players;
-	private int livingPlayers;
 
 	public enum EGesture {
 		Wide,
@@ -29,6 +33,11 @@ public class DemonScript : MonoBehaviour {
 		Down
 	};
 
+	private int score;
+	public Text scoreDisplay;
+
+	private float startTime;
+	public Text timeDisplay;
 
 	public static int patternRound = 0;
 
@@ -39,6 +48,8 @@ public class DemonScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		score = 0;
+		started = false;
 		deathChallenge = false;
 		lastChange = Time.time;
 
@@ -48,41 +59,55 @@ public class DemonScript : MonoBehaviour {
 
 		challengeGestures = new EGesture[challengeIcons.Length];
 
-		livingPlayers = 0;
-		foreach (GameObject p in players) {
-			if (p.activeInHierarchy) {
-				livingPlayers += 1;
-			}
-		}
-
 		challengePanel.SetActive (false);
+		normalPanel.SetActive (false);
+
+		print (Input.GetJoystickNames () [0]);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (deathChallenge) {
-			HandleDeathMode ();
+		if (!started) {
+			if (Input.GetKeyDown ("joystick button 7")) {
+				started = true;
+				foreach (GameObject p in players) {
+					PlayerKillController killer = p.GetComponent<PlayerKillController> ();
+					if (!killer.playing) {
+						killer.Kill ();
+					}
+				}
+				startScreen.SetActive (false);
+				normalPanel.SetActive (true);
+				lastChange = Time.time;
+				startTime = Time.time;
+			}
 		} else {
-			HandleNormalMode ();
+			timeDisplay.text = Mathf.Ceil(90 - Time.time + startTime) + "s";
+			if (deathChallenge) {
+				HandleDeathMode ();
+			} else {
+				HandleNormalMode ();
+			}
 		}
 	}
 
 	void HandleDeathMode() {
 		int successfulPlayers = 0;
+		int livingPlayers = 0;
 		foreach (GameObject p in players) {
 			if (p.activeInHierarchy) {
 				if (p.GetComponent<GestureScript> ().FinishedChallenge ()) {
 					successfulPlayers += 1;
 				}
+				livingPlayers += 1;
 			}
 		}
 
-		if (successfulPlayers == livingPlayers - 1) {
+		if (successfulPlayers >= livingPlayers - 1) {
 			foreach (GameObject p in players) {
 				if (p.activeInHierarchy) {
 					if (! (p.GetComponent<GestureScript> ().FinishedChallenge ())) {
 						p.GetComponent<PlayerKillController>().Kill();
-						livingPlayers -= 1;
 					}
 				}
 			}
@@ -94,7 +119,25 @@ public class DemonScript : MonoBehaviour {
 	}
 
 	void HandleNormalMode() {
-		if (lastChange + changeDelay < Time.time) {
+		int matchCount = 0;
+		int livingPlayers = 0;
+		foreach (GameObject p in players) {
+			if (p.activeInHierarchy) {
+				GestureScript playerScript = p.GetComponent<GestureScript> ();
+				if (playerScript.GetGesture () == currentGesture) {
+					matchCount += 1;
+				}
+				livingPlayers += 1;
+			}
+		}
+
+		if (livingPlayers == 0) {
+			SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+		}
+
+		if (matchCount == livingPlayers || lastChange + changeDelay < Time.time) {
+			score += matchCount;
+			scoreDisplay.text = score + " / 100";
 			patternRound++;
 			lastChange = Time.time;
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GestureScript : MonoBehaviour {
 	public int Player = 1;
@@ -16,10 +17,15 @@ public class GestureScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		print (Input.GetAxisRaw ("JoystickTest1"));
+		if (false) {
+			gameObject.SetActive (false);
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
 		foreach (DemonScript.EGesture ges in System.Enum.GetValues(typeof(DemonScript.EGesture))) {
 			if (GestureStart ("" + ges)) {
 				activeGesture = ges;
