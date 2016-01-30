@@ -81,7 +81,7 @@ public class DemonScript : MonoBehaviour {
 			foreach (GameObject p in players) {
 				if (p.activeInHierarchy) {
 					if (! (p.GetComponent<GestureScript> ().FinishedChallenge ())) {
-						p.SetActive (false);
+						p.GetComponent<PlayerKillController>().Kill();
 						livingPlayers -= 1;
 					}
 				}

@@ -8,6 +8,7 @@ public class SwastikaDeathController : MonoBehaviour
     {
         m_playerObject = playerObject;
 
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, m_playerObject.transform.eulerAngles.y + 90, transform.eulerAngles.z);
         transform.position = m_playerObject.transform.position + new Vector3(0.0f, 10.0f, 0.0f);
 
         m_running = true;
@@ -15,16 +16,11 @@ public class SwastikaDeathController : MonoBehaviour
 
     void Start()
     {
-        // Empty
+        Debug.LogError(Input.GetJoystickNames().Length);
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            Fall(GameObject.Find("Player3"));
-        }
-
         if (!m_running)
             return ;
 
@@ -33,14 +29,21 @@ public class SwastikaDeathController : MonoBehaviour
 
     void UpdatePosition()
     {
-        transform.position = Vector3.MoveTowards(transform.position, m_playerObject.transform.position, m_velocity * Time.deltaTime);
+        var position = m_playerObject.transform.position;
+        position.y = 0;
 
-        if ((transform.position - m_playerObject.transform.position).magnitude < 0.5)
+        transform.position = Vector3.MoveTowards(transform.position, position, m_velocity * Time.deltaTime);
+
+        if ((transform.position - position).magnitude < 0.5)
         {
             m_running = false;
 
+            Instantiate(m_hitParticles, m_playerObject.transform.position, m_playerObject.transform.rotation);
+
             m_hitSound.Play();
             m_hitSound2.Play();
+
+            m_playerObject.SetActive(false);
         }
     }
 
@@ -49,6 +52,9 @@ public class SwastikaDeathController : MonoBehaviour
 
     [SerializeField]
     AudioSource m_hitSound2;
+
+    [SerializeField]
+    GameObject m_hitParticles;
 
     [SerializeField]
     float m_velocity = 10.0f;

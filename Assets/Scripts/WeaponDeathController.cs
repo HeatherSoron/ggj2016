@@ -26,9 +26,9 @@ public class WeaponDeathController : MonoBehaviour
         WeaponObject = m_weapons[random];
         WeaponObject.SetActive(true);
 
-        transform.rotation = Quaternion.identity;
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
-        m_targetRotation.eulerAngles = new Vector3(transform.rotation.eulerAngles.x,  transform.rotation.eulerAngles.y, 75);
+        m_targetRotation.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 75);
 
         m_running = true;
     }
@@ -40,11 +40,6 @@ public class WeaponDeathController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Drop(GameObject.Find("Player1"));
-        }
-
         if (!m_running)
             return ;
 
@@ -71,6 +66,8 @@ public class WeaponDeathController : MonoBehaviour
             m_hitSound.Play();
 
             EventDroppedListener();
+
+            m_playerObject.SetActive(false);
         }
     }
 
