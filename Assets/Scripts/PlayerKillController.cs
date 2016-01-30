@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Linq;
 
 public class PlayerKillController : MonoBehaviour
 {
@@ -38,6 +39,7 @@ public class PlayerKillController : MonoBehaviour
 			if (Input.GetButtonDown ("P" + PlayerId + "_Forward")) {
 				playing = true;
 				playingIndicator.color = new Color32 (0, 255, 33, 255);
+                playingIndicator.GetComponentsInChildren<Text>().ToList().ForEach(i => i.color = new Color(0,0,0,1));
 			}
 		}
     }
