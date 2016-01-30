@@ -148,13 +148,13 @@ public class DemonScript : MonoBehaviour {
 	string GetGestureText(EGesture gesture) {
 		switch (gesture) {
 		case EGesture.Forward:
-			return "↑.↑";
+			return "A";
 		case EGesture.Wide:
-			return "←.→";
+			return "B";
 		case EGesture.Middle:
-			return "↖.↗";
+			return "X";
 		case EGesture.Down:
-			return " o ";
+			return "Y";
 		default:
 			return "?";
 		}
