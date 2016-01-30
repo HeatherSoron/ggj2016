@@ -46,6 +46,10 @@ public class GestureScript : MonoBehaviour {
 				challengeIndex = -1;
 			}
 		}
+        else if (activeGesture == GameObject.Find("Demon").GetComponent<DemonScript>().currentGesture)
+        {
+            CreateSuccessPrefab();
+        }
 	}
 
 	public void StartDeathChallenge() {
