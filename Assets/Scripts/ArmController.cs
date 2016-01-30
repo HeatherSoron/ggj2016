@@ -4,6 +4,7 @@ using System;
 
 public class ArmController : MonoBehaviour
 {
+	public int Player;
 
     public enum ESide
     {
@@ -37,19 +38,19 @@ public class ArmController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+		if (Input.GetButtonDown("P" + Player + "_Forward"))
         {
             Direction = EDirection.Forward;
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+		else if (Input.GetButtonDown("P" + Player + "_Middle"))
         {
             Direction = EDirection.HalfOutward;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+		else if (Input.GetButtonDown("P" + Player + "_Wide"))
         {
             Direction = EDirection.Outward;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+		else if (Input.GetButtonDown("P" + Player + "_Down"))
         {
             Direction = EDirection.Down;
         }

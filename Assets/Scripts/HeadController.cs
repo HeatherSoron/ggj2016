@@ -4,6 +4,7 @@ using System;
 
 public class HeadController : MonoBehaviour
 {
+	public int Player;
 
     public enum EDirection
     {
@@ -31,19 +32,19 @@ public class HeadController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+		if (Input.GetButtonDown("P" + Player + "_Forward"))
         {
             Direction = EDirection.Up;
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+		else if (Input.GetButtonDown("P" + Player + "_Middle"))
         {
             Direction = EDirection.Left;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+		else if (Input.GetButtonDown("P" + Player + "_Wide"))
         {
             Direction = EDirection.Right;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+		else if (Input.GetButtonDown("P" + Player + "_Down"))
         {
             Direction = EDirection.Forward;
         }
