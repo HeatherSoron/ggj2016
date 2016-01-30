@@ -48,7 +48,12 @@ public class DemonScript : MonoBehaviour {
 
 		challengeGestures = new EGesture[challengeIcons.Length];
 
-		livingPlayers = players.Length;
+		livingPlayers = 0;
+		foreach (GameObject p in players) {
+			if (p.activeInHierarchy) {
+				livingPlayers += 1;
+			}
+		}
 
 		challengePanel.SetActive (false);
 	}
