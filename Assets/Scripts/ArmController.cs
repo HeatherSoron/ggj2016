@@ -88,7 +88,7 @@ public class ArmController : MonoBehaviour
     ESide m_side = ESide.Left;
 
     [SerializeField]
-    float m_velocity = 90.0f;
+    float m_velocity = 360.0f;
 
     EDirection m_direction = EDirection.Down;
 
