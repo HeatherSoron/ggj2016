@@ -57,9 +57,8 @@ public class DemonScript : MonoBehaviour {
 		deathChallenge = false;
 		lastChange = Time.time;
 
-		currentGesture = RandomGesture (EGesture.Forward);
-		nextGesture = RandomGesture (currentGesture);
-		ShowGesture (currentGestureIcon, currentGesture);
+		// not actually an EGesture value. BUT, it works passably as "no-value".
+		currentGesture = (EGesture)100;
 
 		challengeGestures = new EGesture[challengeIcons.Length];
 
@@ -85,6 +84,10 @@ public class DemonScript : MonoBehaviour {
 				normalPanel.SetActive (true);
 				lastChange = Time.time;
 				startTime = Time.time;
+
+				currentGesture = RandomGesture (EGesture.Forward);
+				nextGesture = RandomGesture (currentGesture);
+				ShowGesture (currentGestureIcon, currentGesture);
 			}
 		} else if (!won) {
 			timeDisplay.text = Mathf.Ceil (90 - Time.time + startTime) + "s";
