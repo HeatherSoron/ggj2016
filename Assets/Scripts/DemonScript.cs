@@ -12,6 +12,8 @@ public class DemonScript : MonoBehaviour {
 
 	public GameObject startScreen;
 
+	public CrossDeathController cross;
+	private bool won = false;
 
 	public GameObject currentGestureIcon;
 	public GameObject nextGestureIcon;
@@ -46,6 +48,8 @@ public class DemonScript : MonoBehaviour {
 	public float changeDelay = 4f;
 	private float lastChange = 0;
 
+	public int winThreshold = 100;
+
 	// Use this for initialization
 	void Start () {
 		score = 0;
@@ -53,7 +57,7 @@ public class DemonScript : MonoBehaviour {
 		deathChallenge = false;
 		lastChange = Time.time;
 
-		currentGesture = RandomGesture ();
+		currentGesture = RandomGesture (EGesture.Forward);
 		nextGesture = RandomGesture (currentGesture);
 		ShowGesture (currentGestureIcon, currentGesture);
 
@@ -73,20 +77,25 @@ public class DemonScript : MonoBehaviour {
 				foreach (GameObject p in players) {
 					PlayerKillController killer = p.GetComponent<PlayerKillController> ();
 					if (!killer.playing) {
-						killer.Kill ();
+						killer.gameObject.SetActive (false);
 					}
 				}
+				GetComponent<AudioSource> ().Play ();
 				startScreen.SetActive (false);
 				normalPanel.SetActive (true);
 				lastChange = Time.time;
 				startTime = Time.time;
 			}
-		} else {
-			timeDisplay.text = Mathf.Ceil(90 - Time.time + startTime) + "s";
+		} else if (!won) {
+			timeDisplay.text = Mathf.Ceil (90 - Time.time + startTime) + "s";
 			if (deathChallenge) {
 				HandleDeathMode ();
 			} else {
 				HandleNormalMode ();
+			}
+		} else {
+			if (Input.GetKeyDown ("joystick button 7")) {
+				SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
 			}
 		}
 	}
@@ -137,7 +146,7 @@ public class DemonScript : MonoBehaviour {
 
 		if (matchCount == livingPlayers || lastChange + changeDelay < Time.time) {
 			score += matchCount;
-			scoreDisplay.text = score + " / 100";
+			scoreDisplay.text = score + " / " + winThreshold;
 			patternRound++;
 			lastChange = Time.time;
 
@@ -168,8 +177,18 @@ public class DemonScript : MonoBehaviour {
 			ShowGesture (currentGestureIcon, currentGesture);
 		}
 
+		if (score >= winThreshold) {
+			Win ();
+		}
+
 		// update this every frame so that we can fade it in (with alpha)
 		ShowGesture (nextGestureIcon, nextGesture, (byte)(255 * (Time.time - lastChange) / changeDelay));
+	}
+
+	void Win() {
+		won = true;
+		cross.Fall (gameObject);
+		normalPanel.SetActive (false);
 	}
 
 	void ShowGesture(GameObject icon, EGesture gesture, byte alpha = 255) {
