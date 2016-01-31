@@ -18,7 +18,7 @@ public class DemonScript : MonoBehaviour {
 	public GameObject currentGestureIcon;
 	public GameObject nextGestureIcon;
 
-	public EGesture currentGesture;
+	public static EGesture currentGesture;
 	private EGesture nextGesture;
 
 	public GameObject challengePanel;
@@ -48,10 +48,13 @@ public class DemonScript : MonoBehaviour {
 	public float changeDelay = 4f;
 	private float lastChange = 0;
 
+	private float loseTime;
+
 	public int winThreshold = 100;
 
 	// Use this for initialization
 	void Start () {
+		loseTime = 0;
 		score = 0;
 		started = false;
 		deathChallenge = false;
@@ -70,15 +73,25 @@ public class DemonScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (Input.GetKeyDown ("joystick button 6")) {
+			SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+		}
+
 		if (!started) {
 			if (Input.GetKeyDown ("joystick button 7")) {
 				started = true;
+				int livingPlayers = 0;
 				foreach (GameObject p in players) {
 					PlayerKillController killer = p.GetComponent<PlayerKillController> ();
 					if (!killer.playing) {
 						killer.gameObject.SetActive (false);
+					} else {
+						livingPlayers += 1;
 					}
 				}
+				winThreshold = 45 + (30 * livingPlayers);
+				scoreDisplay.text = score + " / " + winThreshold;
+
 				GetComponent<AudioSource> ().Play ();
 				startScreen.SetActive (false);
 				normalPanel.SetActive (true);
@@ -90,8 +103,12 @@ public class DemonScript : MonoBehaviour {
 				ShowGesture (currentGestureIcon, currentGesture);
 			}
 		} else if (!won) {
-			timeDisplay.text = Mathf.Ceil (90 - Time.time + startTime) + "s";
-			if (deathChallenge) {
+			timeDisplay.text = Mathf.Ceil (60 - Time.time + startTime) + "s";
+			if (loseTime != 0) {
+				if (loseTime + 3f < Time.time) {
+					SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+				}
+			} else if (deathChallenge) {
 				HandleDeathMode ();
 			} else {
 				HandleNormalMode ();
@@ -144,7 +161,7 @@ public class DemonScript : MonoBehaviour {
 		}
 
 		if (livingPlayers == 0) {
-			SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+			loseTime = Time.time;
 		}
 
 		if (matchCount == livingPlayers || lastChange + changeDelay < Time.time) {

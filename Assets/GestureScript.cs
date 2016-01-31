@@ -46,7 +46,7 @@ public class GestureScript : MonoBehaviour {
 				challengeIndex = -1;
 			}
 		}
-        else if (activeGesture == GameObject.Find("Demon").GetComponent<DemonScript>().currentGesture)
+		else if (activeGesture == DemonScript.currentGesture && GameObject.Find("Demon") != null)
         {
             CreateSuccessPrefab();
         }
